@@ -1,0 +1,36 @@
+security:
+    password_hashers:
+        App\Entity\User:
+            algorithm: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: login
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login
+                username_path: login
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+
+    access_control:
+        - { path: ^/api/user/login,    roles: PUBLIC_ACCESS }
+        - { path: ^/api/user/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/me,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api,          roles: IS_AUTHENTICATED_FULLY }
